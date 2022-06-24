@@ -1,0 +1,169 @@
+---
+title: "top2vec testing"
+author: "Alex Galczak"
+date: '2022-06-20'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(remotes)
+
+```
+
+```{r}
+remotes::install_github("michalovadek/top2vecr")
+```
+```{r}
+x <- recipes %>%
+  rename(doc_id=title, text=clean_ingredients)
+```
+
+
+
+
+```{r}
+library(doc2vec)
+library(word2vec)
+
+
+```
+
+
+```{r}
+model <- paragraph2vec(
+  x,
+  type = c("PV-DBOW", "PV-DM"),
+  dim = 10,
+  iter = 5
+
+)
+```
+
+
+```{r}
+embedding <- as.matrix(model, which = "words")
+```
+
+```{r}
+w2v   <- word2vec(x$text, dim = 10, type = "cbow", iter = 20, min_count = 5)
+emb   <- as.matrix(w2v)
+model <- paragraph2vec(x = x, dim = 10, type = "PV-DM", iter = 20, min_count = 5, 
+                       embeddings = emb)
+```
+
+
+
+```{r}
+vocab <- summary(model, type = "vocabulary",  which = "words")
+```
+
+```{r}
+library(uwot)
+library(dbscan)
+library(word2vec)
+```
+
+
+```{r}
+
+x$text   <- txt_clean_word2vec(x$text)
+
+x        <- subset(x, txt_count_words(text) < 1000)
+d2v      <- paragraph2vec(x, type = "PV-DBOW", dim = 10, 
+                          lr = 0.05, iter = 0,
+                          window = 5, hs = TRUE, negative = 0,
+                          sample = 0.00001, min_count = 5)
+emb      <- list(docs  = as.matrix(d2v, which = "docs"),
+                 words = as.matrix(d2v, which = "words"))
+model    <- top2vec(emb, 
+                    data = x,
+                    control.dbscan = list(minPts = 50), 
+                    control.umap = list(n_neighbors = 15, n_components = 2, 
+                                        init = "spectral"), 
+                    umap = tumap, trace = TRUE)
+info     <- summary(model, top_n = 7)
+
+```
+
+
+```{r}
+print(info, top_n = c(5, 2))
+```
+
+
+
+```{r}
+top2vecr <- function(recipes, type = "PV-DBOW", dim = 300L, iter = 40L,
+                     hs = TRUE, window = 15L, negative = 0L, sample = 0.00001,
+                     min_count = 50, lr = 0.05, threads = 4L,
+                     n_neighbours = 15L, n_components = 5L, metric = "cosine",
+                     minPts = 15L){
+
+  # checks:
+
+  # check number of words < 1000
+  # check number of documents > n_neighbours
+
+  x$text <- x$text %>%
+    stringr::str_squish() %>%
+    stringr::str_trim() %>%
+    stringr::str_remove_all("[:punct:]|[:digit:]") %>%
+    stringr::str_to_lower()
+
+  stopifnot(stringr::str_count(x$text, " ") < 1000)
+  stopifnot(length(x$text) > n_neighbours)
+
+  model <- doc2vec::paragraph2vec(x = x, type = type, dim = dim, iter = iter,
+                                  hs = hs, window = window, negative = negative, sample = sample,
+                                  min_count = min_count, lr = lr, threads = threads)
+
+  embeddings_docs <- as.matrix(model, which = "docs")
+  embeddings_words <- as.matrix(model, which = "words")
+
+  docs_umap <- uwot::umap(embeddings_docs, n_neighbors = n_neighbours,
+                          n_components = n_components, metric = metric)
+
+  cl <- dbscan::hdbscan(docs_umap, minPts = minPts)
+
+  emb_cl <- cbind(embeddings_docs, topic = cl$cluster)
+
+  topic_centroids <- emb_cl %>%
+    as.data.frame() %>%
+    dplyr::mutate(topic = as.character(topic)) %>%
+    dplyr::group_by(.data$topic) %>%
+    dplyr::summarise_if(is.numeric, mean) # centroid => topic = new vector
+
+  topic_medoids <- emb_cl %>%
+    as.data.frame() %>%
+    dplyr::mutate(topic = as.character(topic)) %>%
+    dplyr::group_by(.data$topic) %>%
+    dplyr::summarise_if(is.numeric, median) # medoid => topic = most similar document in cluster
+
+  topic_words <- vector("list", nrow(topic_centroids))
+
+  for (k in 1:nrow(topic_centroids)){
+
+    topic <- topic_centroids[k,] %>%
+      dplyr::select(-topic) %>%
+      as.matrix()
+
+    rownames(topic) <- deframe(topic_centroids[k,1])
+
+    topic_words[[k]] <- doc2vec::paragraph2vec_similarity(y = embeddings_words, x = topic, top_n = 10) %>%
+      dplyr::rename(topic = term1,
+                    word = term2)
+
+  }
+
+  return(topic_words)
+
+}
+
+```
+
