@@ -32,7 +32,61 @@ they are composed of. Similarly trigrams such as "virgin olive oil" were identif
 
 ## Cleaning
 
-We attempted to clean the data using [this](https://medium.com/geekculture/data-preprocessing-and-eda-for-natural-language-processing-56e45c1df36d) as a 
-guide.
+We attempted to clean the directions and ingredients column using [this](https://medium.com/geekculture/data-preprocessing-and-eda-for-natural-language-processing-56e45c1df36d) as a 
+guide. Stop words and punctuation were removed using texthero. Parts of speech were tagged and verbs and adverbs were removed to try and isolate the key
+ingredients that separated the recipes into distinct topics. Remaining words were lemmatized.
 
-## Natural Language Processing Methods
+As further words were identified as potentially interfering with successful topic separation those words were added to the stop word list. These included
+spices that spanned topics, such as salt which appears (in varying quantities) in sweet and savory recipes.
+
+Although a good portion of time was spent cleaning the data, the NLP-specific models tended to perform better with the raw directions text as opposed to
+the altered/cleaned version.
+
+## Topic Modeling/Clustering Methods Applied
+
+### K Means
+
+K means nearest neighbor is a machine learning clustering technique. Although it is not specifically designed for NLP-specific data, we wanted to apply 
+it and assess its performance compared to the NLP-specific methodologies.
+
+### Latent Dirichlet Allocation (LDA)
+
+Latent Dirichlet Allocation (LDA) is an older approach to topic modeling that employs a probabalistic approach to identifying related terms that may 
+represent a theme.
+
+When running the LDA model on _____ we found ____.
+
+### Top2Vec with Doc2Vec
+
+Top2Vec is a fully integrated approach to analyzing NLP data. It includes a step where the "documents" are embedded into vectors. The specific algorithm
+used to embed the documents is interchangeable. The dimensionality is then reduced using UMAP and dense pockets of documents are located using HDBSCAN.
+Once the dense areas are located the centroids are calculated and most relevant documents are returnable.
+
+Here we used Doc2Vec to embed the documents. Doc2Vec is a technique that uses neural networks to derive semantic knowledge by training neurons to predict subsequent words in a sentence as well as encoding an overall context or theme of the entire document.
+
+We applied Top2Vec using Doc2Vec to embed the documents to the "clean" version of the ingredients and directions columns, in addition to the unaltered 
+ingredients and directions columns. The model appeared to perform better with the full text as compared to the "cleaned" versions. Reflecting on how the 
+embedding is completed this makes sense.
+
+###BERTopic
+
+BERTopic uses the framework of Top2Vec, but uses it's own "sentence transformers" embedding technique which is a form of transfer learning. 
+
+### Correlation Explanation (CorEx)
+
+Correlation Explanation (CorEx) is a relatively recent development in the NLP space. It functions by correlating words based on their co-appearance within documents. CorEx allows for semi-supervised training by allowing the user to provide "anchor" words to the model. These anchor words are weighted and allow the user to guide the model to topics that they deem important that the model may have otherwise missed. A few things of note: CorEx doesn't yet support ngrams. Keywords can only belong to a single topic (overridable by using anchor words). And the assignment of documents to topics is probabalistic and documents aren't restricted to a single topic. Documents can be assigned to all topics, no topics or anything in between.
+
+## Results
+
+
+
+## Conclusions
+
+
+
+## Future Directions
+
+****TO DO
+
+Add links to each method for citation and links to useful articles discussing implementation
+Add link to data
