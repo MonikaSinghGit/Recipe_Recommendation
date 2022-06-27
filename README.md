@@ -3,7 +3,7 @@
 ## Background/Problem
 
 Food waste is a major problem in the United States. It's estimated that up to 40% of food is wasted, or approximately 108B pounds of food or 130B meals
-and the equivalent of $40B annually. 
+and the equivalent of $40B annually. [Source](https://www.feedingamerica.org/our-work/our-approach/reduce-food-waste#:~:text=How%20much%20food%20waste%20is,food%20in%20America%20is%20wasted.)
 
 We tend to accumulate ingredients over time when we plan meals and end up not making the meal or buy things on sale. We end up with a mixture of 
 odds and ends that may not combine to make a recipe we would normally make. 
@@ -87,15 +87,44 @@ Correlation Explanation (CorEx) is a relatively recent development in the NLP sp
 
 ## Results
 
+### Developing Intuitive Categories
 
+One goal of this project was to identify and automatically apply intuitive categories to the recipes. This is a distinct goal from topic modeling. The categories identified were cake and bread, cookie, pie, soup, dip, meat, muffin, salad, fudge, casserole, cocktail, ice cream, chili, brownie, meatball, and fish. These categories were achieved by using BERTopic to group recipes into topics using the ________ column. Then each topic's title minus any words in the "NER" or clean ingredients column were taken and examined for the most frequent words. These topics were developed to allow users to choose a subcategory of food when selecting recipes.
+
+### Developing a Comparison Metric for Evaluating Topic Modeling
+
+Unsupervised learning techniques are notoriously difficult to evaluate, because unlike supervised learning the data are not labeled and therefore it is difficult to assess how well the technique performed without manually reviewing the result. The models used in this project had various parameters that we had the option of tuning. However, these parameters were often unique to each method and didn't necessarily have an analogue in the other models. Therefore, comparing the models and attempting to hold variables constant was virtually impossible. Lastly, assessing topic modeling is especially difficult. The model returns specific themes as models - how do you define one topic as "good" and one as "bad?" Further, what do you do when your model generates hundreds of topics? Rating each one manually can be a huge time sink.
+
+We addressed this problem in the current project by leveraging the "NER" or clean ingredients column. This column that was provided with the data set contained a list of strings (unigrams and bigrams mostly) with the units and non-noun parts of speech stripped away. We combined this column for every recipe included in each topic and then identified the amount of overlap between recipes within the topics. Specifically, we took the number of the unique strings and divided by the number of strings (with duplicates maintained) to arrive at a score we termed "topic concentration." This number ranging from 0-1 indicated how pure each topic was. In other words, the more overlap in ingredients between recipes would result in a score closer to zero and would be deemed a better more concentrated topic. Those with few ingredients in common would be scored closer to 1 and are concentrated less well.
+
+### Evaluation of Topic Modeling/Clustering Approaches
+
+Utilizing the "topic concentration" score we evaluated the topics produced by BERTopic, Top2Vec and CorEx. We plan to add Kmeans clustering to this evaluation and potentially LDA. BERTopic produced 256 topics and had a median topic concentration of 0.484 and a range of 0.082 to 0.898. Top2Vec using Doc2Vec embedding produced 228 topics and had a median topic concentration of 0.375 with a range of 0.123 to 0.65. Lastly, CorEx was specified to produce 50 topics and had a median topic concetration of 0.193 with a range of 0.079 to 0.467.
 
 ## Conclusions
 
+Examining the topic concentration scores it appears CorEx performed the best (raw score only, no statistic was computed). However, because the number of topics has to be specified and because it was one-fifth the size of the other two models this may not be comparable. Additionally, CorEx produces the probability that the recipe belongs to each topic. Therefore, even when only examining the maximum probability produced for each recipe, the recipe can be placed into more than one topic or no topics at all. This means that the total number of distinct recipes included in the topics when counting recipes each time they appear in a topic was 43,646 even though the number of unique recipes in the sample was 22,311. This could be inflating the denominator and artificially suppressing the score. Additional investigation needs to be completed before proceeding with this option.
 
+The second best performing topic modeling technique was Top2Vec (raw score only, no statistic was computed). Top2Vec has a search functionality built into its package. This search function was used to test a few sample ingredient searches. These test searches returned recipes that logically fit into the ingredients provided. And perhaps more importantly, didn't return any recipes that seemed out of place when considering the ingredient list provided.
+
+BERTopic performed the least well (raw score only, no statistic was computed) out of the three models. Because BERTopic uses "sentence transformers" a transfer learning technique, it is possible that the narrowness of the subject area (i.e. recipes) stands in contrast to the breadth the model assumes. It is also important to note that the models also had descending range sizes.
 
 ## Future Directions
+
+### Main Ingredient Identification
+
+Identifying the main ingredient of a recipe would help in grouping like recipes together. We would like to continue to work on this data set and quantify the percent of the overall ingredients each ingredient makes up by extracting the measurement metric and standardizing it across all ingredients. This would also help in returning more relevant recipes, as it would preclude returning a recipe where a main ingredient is not in the searched list.
+
+### Additional Categorizing
+
+We noted during the project that recipes for those with dietary restrictions (e.g. vegetarian, vegan, gluten free) were often inextricable from other recipes as the overlap of spices may have caused them to be grouped together. We would like to make these specific recipes identifiable. Additionally, adding genre to allow users to search by the genre of food they desired would make this more user friendly.
+
+### Nutritional Information
+
+Lastly, returning nutritional information for each recipe could help users select recipes that best fit their dietary needs.
 
 ****TO DO
 
 Add links to each method for citation and links to useful articles discussing implementation
-Add link to data
+Score remaining models for comparison
+Calculate a statistical comparison of the topic concentration scores?
