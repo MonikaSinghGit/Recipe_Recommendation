@@ -89,6 +89,10 @@ Correlation Explanation (CorEx) is a relatively recent development in the NLP sp
 
 ### Developing Intuitive Categories
 
+<!-------    
+One of the objectives of this project was to identify and automatically categorize the recipes into intuitive categories. The recipes can be categorized using clustering algorithms. However, assigning a meaningful name to each cluster or category is challenging in unsupervised learning. 
+There are several unsupervised methods that suggest a list of potential topics for a cluster, such as BerTopic, word2vec, and LDA. However, assigning a meaning for the name to a cluster requires manual intervention and domain expertise. This work proposes an automated method to assign a meaningful name to each recipe category(cluster).
+-->
 One goal of this project was to identify and automatically apply intuitive categories to the recipes. This is a distinct goal from topic modeling. The categories identified were cake and bread, cookie, pie, soup, dip, meat, muffin, salad, fudge, casserole, cocktail, ice cream, chili, brownie, meatball, and fish. These categories were achieved by using BERTopic to group recipes into topics using the ________ column. Then each topic's title minus any words in the "NER" or clean ingredients column were taken and examined for the most frequent words. These topics were developed to allow users to choose a subcategory of food when selecting recipes.
 
 ### Developing a Comparison Metric for Evaluating Topic Modeling
