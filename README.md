@@ -96,8 +96,8 @@ This is done in the follwoing steps:
 * We created a clean_title column, which contains the only name of the recipe, not the ingredient. For example, a recipe titled "Apple pie" will become "Pie" in the clean_title column. This is done by removing all words in the title that are also present in the corresponding NER column. 
 * We combine directions and clean_title columns and use the BerTopic model to cluster similar recipes together.
 * We identified the most frequent cleaned_tilte in each cluster and selected the category name for each cluster based on the following rule:
-  * sub The most frequent cleaned_tilte will be used to represent the category of each recipe in the corresponding cluster if the difference in the frequency of the most and second most frequent clean_title is less than 50%.
-  * sub If the difference in the frequency of the first two most frequent clean_title is greater than or equal to 50%, then both titles concatenated with an 'and' will represent the category of each recipe in that cluster.<br>
+  * The most frequent cleaned_tilte will be used to represent the category of each recipe in the corresponding cluster if the difference in the frequency of the most and second most frequent clean_title is less than 50%.
+  * If the difference in the frequency of the first two most frequent clean_title is greater than or equal to 50%, then both titles concatenated with an 'and' will represent the category of each recipe in that cluster.<br>
 
 
 The categories identified were cake and bread, cookie, pie, soup, dip, meat, muffin, salad, fudge, casserole, cocktail, ice cream, chili, brownie, meatball, and fish. These categories were derived to allow users to choose a subcategory of food when selecting recipes.
