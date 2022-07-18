@@ -152,7 +152,7 @@ Calculate a statistical comparison of the topic concentration scores?
 
 ## **References**
 
-<a id="1">[1]</a> 
+<a id="1">[1]</a>
 Grootendorst, Maarten (2022). 
 BERTopic: Neural topic modeling with a class-based TF-IDF procedure. 
 CarXiv preprint arXiv:2203.05794.
