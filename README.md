@@ -89,12 +89,20 @@ Correlation Explanation (CorEx) is a relatively recent development in the NLP sp
 
 ### Developing Intuitive Categories
 
-<!-------    
+ 
 One of the objectives of this project was to identify and automatically categorize the recipes into intuitive categories. The recipes can be categorized using clustering algorithms. However, assigning a meaningful name to each cluster or category is challenging in unsupervised learning. 
 There are several unsupervised methods that suggest a list of potential topics for a cluster, such as BerTopic, word2vec, and LDA. However, assigning a meaning for the name to a cluster requires manual intervention and domain expertise. This work proposes an automated method to assign a meaningful name to each recipe category(cluster).
--->
-One goal of this project was to identify and automatically apply intuitive categories to the recipes. This is a distinct goal from topic modeling. The categories identified were cake and bread, cookie, pie, soup, dip, meat, muffin, salad, fudge, casserole, cocktail, ice cream, chili, brownie, meatball, and fish. These categories were achieved by using BERTopic to group recipes into topics using the ________ column. Then each topic's title minus any words in the "NER" or clean ingredients column were taken and examined for the most frequent words. These topics were developed to allow users to choose a subcategory of food when selecting recipes.
+This is done in the follwoing steps: 
+* We created a clean_title column, which contains the only name of the recipe, not the ingredient. For example, a recipe titled "Apple pie" will become "Pie" in the clean_title column. This is done by removing all words in the title that are also present in the corresponding NER column. 
+* We combine directions and clean_title columns and use the BerTopic model to cluster similar recipes together.
+* We identified the most frequent cleaned_tilte in each cluster and selected the category name for each cluster based on the following rule:
+  * sub The most frequent cleaned_tilte will be used to represent the category of each recipe in the corresponding cluster if the difference in the frequency of the most and second most frequent clean_title is less than 50%.
+  * sub If the difference in the frequency of the first two most frequent clean_title is greater than or equal to 50%, then both titles concatenated with an 'and' will represent the category of each recipe in that cluster.
+The categories identified were cake and bread, cookie, pie, soup, dip, meat, muffin, salad, fudge, casserole, cocktail, ice cream, chili, brownie, meatball, and fish. These categories were derived to allow users to choose a subcategory of food when selecting recipes.
 
+<!-------   
+One goal of this project was to identify and automatically apply intuitive categories to the recipes. This is a distinct goal from topic modeling. The categories identified were cake and bread, cookie, pie, soup, dip, meat, muffin, salad, fudge, casserole, cocktail, ice cream, chili, brownie, meatball, and fish. These categories were achieved by using BERTopic to group recipes into topics using the ________ column. Then each topic's title minus any words in the "NER" or clean ingredients column were taken and examined for the most frequent words. These topics were developed to allow users to choose a subcategory of food when selecting recipes.
+-->
 ### Developing a Comparison Metric for Evaluating Topic Modeling
 
 Unsupervised learning techniques are notoriously difficult to evaluate, because unlike supervised learning the data are not labeled and therefore it is difficult to assess how well the technique performed without manually reviewing the result. The models used in this project had various parameters that we had the option of tuning. However, these parameters were often unique to each method and didn't necessarily have an analogue in the other models. Therefore, comparing the models and attempting to hold variables constant was virtually impossible. Lastly, assessing topic modeling is especially difficult. The model returns specific themes as models - how do you define one topic as "good" and one as "bad?" Further, what do you do when your model generates hundreds of topics? Rating each one manually can be a huge time sink.
