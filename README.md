@@ -150,7 +150,7 @@ Score remaining models for comparison
 Calculate a statistical comparison of the topic concentration scores?
 
 
-##References:
+## **References**
 
 <a id="1">[1]</a> 
 Grootendorst, Maarten (2022). 
