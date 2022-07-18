@@ -74,8 +74,14 @@ ingredients and directions columns. The model appeared to perform better with th
 embedding is completed this makes sense.
 
 ### BERTopic
+BERTopic uses similar clustering techniques as Top2Vec. However, it uses sentence-tranformers and c-Tf-Idf to generate dense clusters and interpretable topics. This algorithm works in the following three phases:
+* Embed Documents: BerTopic performs the document embedding extraction by using Sentence Transformers. This phase encodes a sentence or short text paragraphs into a fixed-length vector.
+* Cluster Documents: Similar to Top2Vec UMAP is used to reduce the dimensionality of embeddings and HDBSCAN to identify and cluster semantically similar recipes using HDBSCAN
+* Create Topic Representation: BerTopic used a class-based TF-ID (c-TF-IDF) technique to identify the most important topics in each cluster. C-Tf-IDF method treats all documents in a single cluster as a single document and then computes TF-IDF, which results the most important topics within a cluster.
 
+<!---
 BERTopic uses the framework of Top2Vec, but uses it's own "sentence transformers" embedding technique which is a form of transfer learning. 
+--->
 
 ### Correlation Explanation (CorEx)
 Examples and introduction: [Link1](https://github.com/gregversteeg/corex_topic/blob/master/corextopic/example/corex_topic_example.ipynb)
