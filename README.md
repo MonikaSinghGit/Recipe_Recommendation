@@ -73,7 +73,7 @@ We applied Top2Vec using Doc2Vec to embed the documents to the "clean" version o
 ingredients and directions columns. The model appeared to perform better with the full text as compared to the "cleaned" versions. Reflecting on how the 
 embedding is completed this makes sense.
 
-### BERTopic
+### BERTopic[1]
 BERTopic uses similar clustering techniques as Top2Vec. However, it uses sentence-tranformers and c-Tf-Idf to generate dense clusters and interpretable topics. This algorithm works in the following three phases:
 * Embed Documents: BerTopic performs the document embedding extraction by using Sentence Transformers. This phase encodes a sentence or short text paragraphs into a fixed-length vector.
 * Cluster Documents: Similar to Top2Vec UMAP is used to reduce the dimensionality of embeddings and HDBSCAN to identify and cluster semantically similar recipes using HDBSCAN
@@ -148,3 +148,13 @@ Lastly, returning nutritional information for each recipe could help users selec
 Add links to each method for citation and links to useful articles discussing implementation
 Score remaining models for comparison
 Calculate a statistical comparison of the topic concentration scores?
+
+
+##References:
+
+<a id="1">[1]</a> 
+Grootendorst, Maarten (2022). 
+BERTopic: Neural topic modeling with a class-based TF-IDF procedure. 
+CarXiv preprint arXiv:2203.05794.
+
+
